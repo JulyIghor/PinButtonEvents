@@ -1,0 +1,11 @@
+PinButtonEvents KEYWORD1
+State KEYWORD2
+on KEYWORD2
+update KEYWORD2
+setDebounceDelay KEYWORD2
+getPinReleased KEYWORD2
+setPinReleased KEYWORD2
+getPinPressed KEYWORD2
+setPinPressed KEYWORD2
+Pressed LITERAL1
+Released LITERAL1
