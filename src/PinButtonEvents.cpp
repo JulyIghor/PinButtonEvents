@@ -98,6 +98,8 @@ void PinButtonEvents::update()
             _releaseTime = millis();
             _state = State::Released;
             triggerEvent();
+            if (_holdCount)
+                _repeatCount = 0;
             _holdCount = 0;
         }
         else if (_pressTime && digitalRead(_pin) == _pinPressed)
