@@ -25,20 +25,54 @@ SOFTWARE.
 
 #include "PinButtonEvents.h"
 
-PinButtonEvents button(0);
+PinButtonEvents button;
 
 void setup()
 {
     Serial.begin(115200);
+    button.setPin(0, INPUT);
+    button.setPinReleased(HIGH);
+    button.setPinPressed(LOW);
+
+    // General callback for handling all non sequence events
     button.on([](PinButtonEvents::State state, unsigned char holdCount, unsigned char repeatCount)
-              {
-                  // General callback for handling all events
-                  Serial.print("PinButtonEvents: ");
-                  Serial.print(state == PinButtonEvents::State::Pressed ? "pressed" : "released");
-                  Serial.print(" | HoldS: ");
-                  Serial.print(holdCount);
-                  Serial.print(" | Repeated: ");
-                  Serial.println(repeatCount); });
+    {
+        Serial.print("PinButtonEvents: ");
+        Serial.print(state == PinButtonEvents::State::Pressed ? "pressed" : "released");
+        Serial.print(" | HoldS: ");
+        Serial.print(holdCount);
+        Serial.print(" | Repeated: ");
+        Serial.println(repeatCount);
+    });
+
+    // Define callbacks for handling specific button states, hold durations, and repeated press counts:
+
+    button.on(PinButtonEvents::State::Pressed, 5, 4, []()
+    {
+        Serial.println("Pressed 5 times and held for 5 seconds");
+    });
+
+    button.on(PinButtonEvents::State::Pressed, 3, 0, []()
+    {
+        Serial.println("Held for 3 seconds");
+    });
+
+    button.on(PinButtonEvents::State::Pressed, 0, 1, []()
+    {
+        Serial.println("Double pressed button");
+    });
+
+    // Attach any sequences to specific actions via callbacks for an intuitive and versatile interaction framework. Ideal for projects requiring detailed input handling
+
+    button.onSequence({PinButtonEvents::Sequence::Short, PinButtonEvents::Sequence::Short, PinButtonEvents::Sequence::Pause, PinButtonEvents::Sequence::Long}, []()
+    {
+        Serial.println("Sequence detected: Short, Short, Pause, Long");
+    });
+
+    button.onSequence({PinButtonEvents::Sequence::Long, PinButtonEvents::Sequence::Pause, PinButtonEvents::Sequence::Long, PinButtonEvents::Sequence::Short}, []()
+    {
+        Serial.println("Sequence detected: Long, Pause, Long, Short");
+    });
 }
 
 void loop()

@@ -13,7 +13,7 @@ Library for handling button events with debouncing support and a vast number of 
 To use the PinButtonEvents library in your Arduino projects, simply download the latest version from the [GitHub repository](https://github.com/JulyIghor/PinButtonEvents) and install it using the Arduino IDE.
 
 ## Usage
-Define callbacks for handling specific button states, hold durations, and repeated press counts:
+
 ```cpp
 #include <PinButtonEvents.h>
 
@@ -23,6 +23,9 @@ void setup()
 {
     Serial.begin(115200);
     button.setPin(0, INPUT); // Initialize button on pin 0
+
+    // Define callbacks for handling specific button states, hold durations, and repeated press counts:
+
     button.on(PinButtonEvents::State::Pressed, 5, 4, []()
     {
         Serial.println("Pressed 5 times and held for 5 seconds");
@@ -36,6 +39,18 @@ void setup()
     button.on(PinButtonEvents::State::Pressed, 0, 1, []()
     {
         Serial.println("Double pressed button");
+    });
+
+    // Attach any sequences to specific actions via callbacks for an intuitive and versatile interaction framework. Ideal for projects requiring detailed input handling
+
+    button.onSequence({PinButtonEvents::Sequence::Short, PinButtonEvents::Sequence::Short, PinButtonEvents::Sequence::Pause, PinButtonEvents::Sequence::Long}, []()
+    {
+        Serial.println("Sequence detected: Short, Short, Pause, Long");
+    });
+
+    button.onSequence({PinButtonEvents::Sequence::Long, PinButtonEvents::Sequence::Pause, PinButtonEvents::Sequence::Long, PinButtonEvents::Sequence::Short}, []()
+    {
+        Serial.println("Sequence detected: Long, Pause, Long, Short");
     });
 }
 
@@ -111,6 +126,13 @@ Registers a callback function for handling button events with a specific state.
 - Parameters:
   - `state`: The button state to trigger the callback (Pressed or Released).
   - `callback`: The callback function to be executed when the specified button event occurs.
+
+### `void onSequence(const std::initializer_list<PinButtonEvents::Sequence>& sequence, std::function<void()> callback);`
+
+Registers a callback function for handling button sequences. Implement intricate input patterns recognition by defining a series of `Short`, `Long`, and `Pause` button events.
+
+- Parameters:
+  - `callback`: The callback function to be executed when a button sequence event occurs.
 
 ### `unsigned long debounceDelay() const`
 

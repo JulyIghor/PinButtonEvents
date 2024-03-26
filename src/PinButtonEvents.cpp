@@ -24,10 +24,19 @@ SOFTWARE.
 
 #include "PinButtonEvents.h"
 #include <limits>
+#include <vector>
 
 #define HOLD_INTERVAL 1000
 #define REPEAT_INTERVAL 500
 #define STATE_ANY -1
+
+struct PinButtonSequence
+{
+    void addSequence(PinButtonEvents::Sequence);
+    std::map<std::vector<PinButtonEvents::Sequence>, std::function<void()>> _callback;
+    std::vector<PinButtonEvents::Sequence> _history;
+    size_t _maxSize = 0;
+};
 
 void PinButtonEvents::setPin(unsigned char pin, unsigned char mode)
 {
@@ -56,6 +65,56 @@ void PinButtonEvents::on(State state, unsigned char holdS, unsigned char repeatC
 void PinButtonEvents::on(State state, std::function<void()> callback)
 {
     on(state, STATE_ANY, STATE_ANY, callback);
+}
+
+void PinButtonSequence::addSequence(PinButtonEvents::Sequence state)
+{
+    if (_callback.empty())
+        return;
+
+    _history.push_back(state);
+    while (_maxSize < _history.size())
+        _history.erase(_history.begin());
+
+    for (const auto& pair : _callback)
+    {
+        const auto& key = pair.first;
+        if (key.size() > _history.size())
+            continue;
+
+        if (!std::equal(key.begin(), key.end(), _history.end() - key.size()))
+            continue;
+
+        pair.second();
+        break;
+    }
+}
+
+void PinButtonEvents::onSequence(const std::initializer_list<Sequence>& sequence, std::function<void()> callback)
+{
+    if (sequence.size() == 0)
+        return;
+
+    if (callback)
+    {
+        if (!_sequence)
+            _sequence.reset(new PinButtonSequence);
+
+        _sequence->_callback[std::vector<Sequence>(sequence)] = callback;
+        _sequence->_maxSize = std::max<size_t>(_sequence->_maxSize, sequence.size());
+    }
+    else if (_sequence)
+    {
+        _sequence->_callback.erase(std::vector<Sequence>(sequence));
+        if (_sequence->_maxSize == _sequence->_callback.size() + 1)
+        {
+            _sequence->_maxSize = 0;
+            for (const auto& pair : _sequence->_callback)
+                _sequence->_maxSize = std::max<size_t>(_sequence->_maxSize, pair.first.size());
+        }
+        if (_sequence->_callback.empty())
+            _sequence.reset();
+    }
 }
 
 void PinButtonEvents::triggerEvent()
@@ -101,6 +160,9 @@ void PinButtonEvents::update()
             triggerEvent();
             if (_holdCount)
                 _repeatCount = 0;
+            else if (_sequence)
+                _sequence->addSequence(Sequence::Short);
+
             _holdCount = 0;
         }
         else if (_pressTime && digitalRead(_pin) == _pinPressed)
@@ -112,6 +174,9 @@ void PinButtonEvents::update()
                 {
                     _pressTime = ml;
                     ++_holdCount;
+
+                    if (_sequence && !_sequence->_callback.empty() && _holdCount == 1)
+                        _sequence->addSequence(Sequence::Long);
                 }
                 else
                     _pressTime = 0;
@@ -121,7 +186,14 @@ void PinButtonEvents::update()
         break;
     case State::Released:
         if (digitalRead(_pin) != _pinPressed)
+        {
+            if (_sequence && !_sequence->_history.empty() && *_sequence->_history.rbegin() != Sequence::Pause)
+            {
+                if (millis() - _releaseTime > HOLD_INTERVAL)
+                    _sequence->addSequence(Sequence::Pause);
+            }
             break;
+        }
         _pressTime = millis();
         _state = State::Pressed;
         if (_releaseTime)

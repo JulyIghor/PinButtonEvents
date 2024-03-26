@@ -33,7 +33,10 @@ SOFTWARE.
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <tuple>
+
+struct PinButtonSequence;
 
 class PinButtonEvents
 {
@@ -44,12 +47,20 @@ public:
         Released = 1
     };
 
+    enum class Sequence : unsigned char
+    {
+        Short = 0,
+        Long,
+        Pause
+    };
+
     void setPin(unsigned char pin, unsigned char mode = INPUT);
     void update();
 
     void on(std::function<void(State state, unsigned char holdS, unsigned char repeatCount)> callback);
     void on(State state, unsigned char holdS, unsigned char repeatCount, std::function<void()> callback);
     void on(State state, std::function<void()> callback);
+    void onSequence(const std::initializer_list<PinButtonEvents::Sequence>& sequence, std::function<void()> callback);
 
     unsigned long debounceDelay() const;
     void setDebounceDelay(unsigned long newDebounceDelay = 30);
@@ -64,6 +75,7 @@ private:
     unsigned char _pin = 0;
     std::function<void(State state, unsigned char holdS, unsigned char repeatCount)> _callback;
     std::map<std::tuple<State, unsigned char, unsigned char>, std::function<void()>> _callbackMap;
+    std::shared_ptr<PinButtonSequence> _sequence;
 
     State _state = State::Released;
     unsigned char _holdCount = 0;
