@@ -28,13 +28,13 @@ SOFTWARE.
 #define REPEAT_INTERVAL 500
 #define STATE_ANY -1
 
-PinButtonEvents::PinButtonEvents(unsigned char pin, unsigned char setPinMode, unsigned long debounceDelay) :
-    _pin(pin), _debounceDelay(debounceDelay)
+void PinButtonEvents::setPin(unsigned char pin, unsigned char mode)
 {
+    _pin = pin;
 #if defined(ARDUINO_ARCH_STM32F1)
-    pinMode(pin, (WiringPinMode)setPinMode);
+    pinMode(pin, (WiringPinMode)mode);
 #else
-    pinMode(pin, setPinMode);
+    pinMode(pin, mode);
 #endif
 }
 

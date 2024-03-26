@@ -43,7 +43,7 @@ public:
         Released = 1
     };
 
-    explicit PinButtonEvents(unsigned char pin, unsigned char setPinMode = INPUT, unsigned long debounceDelay = 30);
+    void setPin(unsigned char pin, unsigned char mode = INPUT);
     void update();
 
     void on(std::function<void(State state, unsigned char holdS, unsigned char repeatCount)> callback);

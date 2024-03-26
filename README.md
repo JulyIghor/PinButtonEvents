@@ -17,11 +17,12 @@ Define callbacks for handling specific button states, hold durations, and repeat
 ```cpp
 #include <PinButtonEvents.h>
 
-PinButtonEvents button(0); // Initialize button on pin 0
+PinButtonEvents button;
 
 void setup()
 {
     Serial.begin(115200);
+    button.setPin(0, INPUT); // Initialize button on pin 0
     button.on(PinButtonEvents::State::Pressed, 5, 4, []()
     {
         Serial.println("Pressed 5 times and held for 5 seconds");
@@ -50,11 +51,12 @@ Define callbacks for handling all events:
 ```cpp
 #include <PinButtonEvents.h>
 
-PinButtonEvents button(0); // Initialize button on pin 0
+PinButtonEvents button;
 
 void setup()
 {
     Serial.begin(115200);
+    button.setPin(0, INPUT); // Initialize button on pin 0
     button.on([](PinButtonEvents::State state, unsigned char holdCount, unsigned char repeatCount)
     {
         Serial.print("PinButtonEvents: ");
@@ -74,14 +76,12 @@ void loop()
 
 ## Class Methods
 
-### `PinButtonEvents(unsigned char pin, unsigned char setPinMode = INPUT, unsigned long debounceDelay = 30)`
-
-Constructor for initializing a PinButtonEvents object with the specified pin, pin mode, and debounce delay.
+### void setPin(unsigned char pin, unsigned char mode = INPUT)
+Set the button pin and pin mode.
 
 - Parameters:
   - `pin`: The GPIO pin connected to the button.
-  - `setPinMode`: The pinMode to set for the button pin (default: INPUT).
-  - `debounceDelay`: The debounce delay in milliseconds (default: 30).
+  - `mode`: The pinMode to set for the button pin (default: INPUT).
 
 ### `void update()`
 
