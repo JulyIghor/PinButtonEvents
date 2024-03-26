@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pinbuttonevents.h"
+#include "PinButtonEvents.h"
 #include <limits>
 
 #define HOLD_INTERVAL 1000
