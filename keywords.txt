@@ -1,6 +1,7 @@
 PinButtonEvents KEYWORD1
 State KEYWORD2
 on KEYWORD2
+onSequence KEYWORD2
 setPin KEYWORD2
 update KEYWORD2
 setDebounceDelay KEYWORD2

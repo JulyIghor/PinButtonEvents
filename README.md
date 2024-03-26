@@ -2,15 +2,22 @@
 
 Library for handling button events with debouncing support and a vast number of combinations.
 
+The project introduces a versatile class designed for advanced button event management on Arduino-compatible devices. It enables detection and handling of complex button press sequences, akin to Morse code, allowing users to define specific patterns of short, long presses, and pauses to trigger designated functions. This feature is particularly useful for applications requiring nuanced user input without relying on multiple buttons or external input devices, streamlining interaction and enhancing user experience.
+
 ## Features
 
-- Support for handling button press, release, hold, and repeated presses.
-- Debouncing to avoid unintended button events.
-- Flexible callback system for defining actions based on button states, hold durations, and repeated press counts.
+The project boasts several key features designed to enhance user interaction through a single button:
+
+1. **Advanced Button Event Management**: Detects and handles multiple button press states.
+2. **Custom Sequence Detection**: Allows defining and recognizing complex press patterns, similar to Morse code.
+3. **Dynamic Callback Association**: Links specific button sequences to user-defined callback functions for tailored responses.
+4. **Debounce Handling**: Incorporates debounce logic to ensure accurate press detection and prevent false triggers.
+5. **Flexible Configuration**: Offers adjustable settings for press durations and intervals, accommodating different user preferences and applications.
+6. **Minimal Hardware Requirements**: Operates with a single button, reducing the need for additional input hardware.
 
 ## Installation
 
-To use the PinButtonEvents library in your Arduino projects, simply download the latest version from the [GitHub repository](https://github.com/JulyIghor/PinButtonEvents) and install it using the Arduino IDE.
+To use the PinButtonEvents library in your Arduino projects, simply download the latest version from the [GitHub repository](https://github.com/JulyIghor/PinButtonEvents) or install it using the Arduino IDE Library Registry.
 
 ## Usage
 
