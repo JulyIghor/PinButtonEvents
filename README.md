@@ -166,3 +166,8 @@ Sets the value of the pin when pressed.
 
 - Parameters:
   - `newPinPressed`: The new pin value when pressed (default: LOW).
+
+## Contact
+- **Author:** Ighor July
+- **Email:** [julyighor@gmail.com](mailto:julyighor@gmail.com)
+- **Project Repository:** [GitHub - JulyIghor/PinButtonEvents](https://github.com/JulyIghor/PinButtonEvents)
