@@ -38,6 +38,16 @@ struct PinButtonSequence
     size_t _maxSize = 0;
 };
 
+inline uint32_t elapsed(uint32_t startMillis, uint32_t currentMillis)
+{
+    return currentMillis >= startMillis ? currentMillis - startMillis : (ULONG_MAX - startMillis) + currentMillis + 1;
+}
+
+inline uint32_t elapsed(uint32_t startMillis)
+{
+    return elapsed(startMillis, millis());
+}
+
 void PinButtonEvents::setPin(unsigned char pin, unsigned char mode)
 {
     _pin = pin;
@@ -146,7 +156,7 @@ void PinButtonEvents::triggerEvent()
 
 void PinButtonEvents::update()
 {
-    if (millis() - _triggerTime < _debounceDelay)
+    if (elapsed(_triggerTime) < _debounceDelay)
         return;
 
     switch (_state)
@@ -168,7 +178,7 @@ void PinButtonEvents::update()
         else if (_pressTime && digitalRead(_pin) == _pinPressed)
         {
             auto ml = millis();
-            if (ml - _pressTime >= HOLD_INTERVAL)
+            if (elapsed(_pressTime, ml) >= HOLD_INTERVAL)
             {
                 if (_holdCount < std::numeric_limits<unsigned char>::max())
                 {
@@ -189,7 +199,7 @@ void PinButtonEvents::update()
         {
             if (_sequence && !_sequence->_history.empty() && *_sequence->_history.rbegin() != Sequence::Pause)
             {
-                if (millis() - _releaseTime > HOLD_INTERVAL)
+                if (elapsed(_releaseTime, millis()) > HOLD_INTERVAL)
                     _sequence->addSequence(Sequence::Pause);
             }
             break;
